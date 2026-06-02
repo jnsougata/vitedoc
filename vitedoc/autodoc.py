@@ -4,11 +4,162 @@ import re
 from textwrap import dedent
 
 
-def format_docstring(doc):
+def render_docstring(doc):
     if not doc:
         return ""
 
-    return dedent(doc).strip()
+    lines = dedent(doc).splitlines()
+    result = []
+
+    section = None
+    last_item = None
+
+    SECTION_HEADERS = {
+        "Args:": "### Arguments",
+        "Arguments:": "### Arguments",
+        "Parameters:": "### Arguments",
+        "Attributes:": "### Attributes",
+        "Members:": "### Attributes",
+        "Returns:": "### Returns",
+        "Yields:": "### Yields",
+        "Raises:": "### Raises",
+        "Examples:": "### Examples",
+        "Notes:": "### Notes",
+        "Warning:": "### Warning",
+        "Warnings:": "### Warnings",
+    }
+
+    SECTION_NAMES = {
+        "args": "args",
+        "arguments": "args",
+        "parameters": "args",
+        "attributes": "attributes",
+        "members": "attributes",
+        "returns": "returns",
+        "yields": "yields",
+        "raises": "raises",
+        "examples": "examples",
+        "notes": "notes",
+        "warning": "warning",
+        "warnings": "warning",
+    }
+
+    for line in lines:
+        stripped = line.strip()
+
+        if not stripped:
+            result.append("")
+            continue
+
+        if stripped in SECTION_HEADERS:
+            section = SECTION_NAMES[stripped[:-1].lower()]
+
+            result.append(SECTION_HEADERS[stripped])
+            result.append("")
+
+            last_item = None
+            continue
+
+        if section in {"args", "attributes"}:
+            m = re.match(
+                r"^\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]+)\):\s*(.*)$",
+                line,
+            )
+
+            if m:
+                name, typ, desc = m.groups()
+
+                result.append(
+                    f"- **{name}** (`{typ}`): {desc}"
+                )
+
+                last_item = len(result) - 1
+                continue
+
+            m = re.match(
+                r"^\s+([A-Za-z_][A-Za-z0-9_]*)\s*:\s*(.*)$",
+                line,
+            )
+
+            if m:
+                name, desc = m.groups()
+
+                result.append(
+                    f"- **{name}**: {desc}"
+                )
+
+                last_item = len(result) - 1
+                continue
+
+            if (
+                last_item is not None
+                and line.startswith((" " * 8, "\t"))
+            ):
+                result[last_item] += f" {stripped}"
+                continue
+
+        elif section in {"returns", "yields"}:
+            m = re.match(
+                r"^\s+([^:]+):\s*(.*)$",
+                line,
+            )
+
+            if m:
+                typ, desc = m.groups()
+
+                result.append(
+                    f"- **Type:** `{typ.strip()}`"
+                )
+
+                if desc:
+                    result.append(f"  - {desc}")
+                    last_item = len(result) - 1
+                else:
+                    last_item = len(result) - 1
+
+                continue
+
+            if (
+                last_item is not None
+                and line.startswith((" " * 8, "\t"))
+            ):
+                result[last_item] += f" {stripped}"
+                continue
+
+        elif section == "raises":
+            m = re.match(
+                r"^\s+([^:]+):\s*(.*)$",
+                line,
+            )
+
+            if m:
+                exc, desc = m.groups()
+
+                result.append(
+                    f"- **{exc.strip()}**: {desc}"
+                )
+
+                last_item = len(result) - 1
+                continue
+
+            if (
+                last_item is not None
+                and line.startswith((" " * 8, "\t"))
+            ):
+                result[last_item] += f" {stripped}"
+                continue
+
+        elif section == "examples":
+            result.append(code_block(stripped))
+            continue
+
+        else:
+            result.append(stripped)
+
+    while result and not result[-1].strip():
+        result.pop()
+
+    return "\n".join(result)
 
 
 def code_block(text):
@@ -49,7 +200,7 @@ def render_function(name, data):
         md.append("")
 
     if data.get("docstring"):
-        md.append(data["docstring"])
+        md.append(render_docstring(data["docstring"]))
         md.append("")
 
     return "\n".join(md)
@@ -78,7 +229,7 @@ def render_method(class_name, method_name, data):
         md.append("")
 
     if data.get("docstring"):
-        md.append(data["docstring"])
+        md.append(render_docstring(data["docstring"]))
         md.append("")
 
     return "\n".join(md)
@@ -96,7 +247,7 @@ def render_property(class_name, prop_name, data):
     md.append("")
 
     if data.get("docstring"):
-        md.append(data["docstring"])
+        md.append(render_docstring(data["docstring"]))
         md.append("")
 
     return "\n".join(md)
@@ -119,7 +270,7 @@ def render_class(name, data):
         md.append("")
 
     if data.get("docstring"):
-        md.append(data["docstring"])
+        md.append(render_docstring(data["docstring"]))
         md.append("")
 
     if data.get("bases"):
@@ -205,7 +356,7 @@ def render_module(module_name, module_data):
     md.append("")
 
     if module_data.get("docstring"):
-        md.append(module_data["docstring"])
+        md.append(render_docstring(module_data["docstring"]))
         md.append("")
 
     classes = module_data.get("classes", {})
