@@ -6,7 +6,7 @@ with open("requirements.txt") as f:
     requirements = f.read().splitlines()  # type: ignore
 
 version = ""
-with open("discohook/__init__.py") as f:
+with open("vitedoc/__init__.py") as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)  # type: ignore
 
 readme = ""
