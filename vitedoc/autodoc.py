@@ -1,37 +1,83 @@
 import json
 import re
-
+from textwrap import dedent
 
 def format_docstring(doc):
     if not doc:
         return ""
 
-    lines = doc.splitlines()
+    lines = dedent(doc).splitlines()
     result = []
 
-    i = 0
-    while i < len(lines):
-        line = lines[i]
+    section = None
+    last_item = None
 
-        if (
-            i + 1 < len(lines)
-            and set(lines[i + 1].strip()) == {"-"}
-            and len(lines[i + 1].strip()) >= 3
-        ):
-            result.append(f"### {line.strip()}")
+    SECTION_HEADERS = {
+        "Args:": "### Arguments",
+        "Arguments:": "### Arguments",
+        "Parameters:": "### Arguments",
+        "Returns:": "### Returns",
+        "Yields:": "### Yields",
+        "Raises:": "### Raises",
+        "Examples:": "### Examples",
+        "Notes:": "### Notes",
+    }
+
+    for line in lines:
+        stripped = line.strip()
+
+        if not stripped:
             result.append("")
-            i += 2
             continue
 
-        m = re.match(r"^(\w+)\s*:\s*(.+)$", line)
+        if stripped in SECTION_HEADERS:
+            section = stripped[:-1].lower()
+            result.append(SECTION_HEADERS[stripped])
+            result.append("")
+            last_item = None
+            continue
 
-        if m:
-            name, typ = m.groups()
-            result.append(f"- **{name}** (`{typ}`)")
-        else:
-            result.append(line)
+        if section == "args":
+            m = re.match(
+                r"^\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([^)]+)\):\s*(.*)$",
+                line,
+            )
 
-        i += 1
+            if m:
+                name, typ, desc = m.groups()
+                result.append(f"- **{name}** (`{typ}`): {desc}")
+                last_item = len(result) - 1
+                continue
+
+            if last_item is not None and line.startswith(" " * 8):
+                result[last_item] += f" {stripped}"
+                continue
+
+        elif section == "returns":
+            m = re.match(r"^\s+([^:]+):\s*(.*)$", line)
+
+            if m:
+                typ, desc = m.groups()
+                result.append(f"- **Type:** `{typ.strip()}`")
+                if desc:
+                    result.append(f"  - {desc}")
+                last_item = len(result) - 1
+                continue
+
+            if last_item is not None and line.startswith(" " * 8):
+                result[last_item] += f" {stripped}"
+                continue
+
+        elif section == "raises":
+            m = re.match(r"^\s+([^:]+):\s*(.*)$", line)
+
+            if m:
+                exc, desc = m.groups()
+                result.append(f"- **{exc.strip()}**: {desc}")
+                last_item = len(result) - 1
+                continue
+
+        result.append(stripped)
 
     return "\n".join(result)
 
