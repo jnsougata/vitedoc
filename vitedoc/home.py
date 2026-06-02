@@ -1,6 +1,6 @@
 import yaml
 
-def create_index_md(
+def homepage(
     path: str,
     *,
     name: str,

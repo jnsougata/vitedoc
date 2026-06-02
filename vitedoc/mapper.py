@@ -11,28 +11,11 @@ def safe_signature(obj):
         return None
 
 
-def safe_source_info(obj):
-    try:
-        file = inspect.getsourcefile(obj)
-        line = inspect.getsourcelines(obj)[1]
-
-        return {
-            "file": file,
-            "line": line,
-        }
-    except Exception:
-        return {
-            "file": None,
-            "line": None,
-        }
-
-
 def extract_function(func):
     return {
         "name": func.__name__,
         "signature": safe_signature(func),
         "docstring": inspect.getdoc(func),
-        **safe_source_info(func),
     }
 
 
@@ -57,7 +40,6 @@ def extract_class(cls):
             methods[name] = {
                 "signature": safe_signature(member),
                 "docstring": inspect.getdoc(member),
-                **safe_source_info(member),
             }
 
     return {
@@ -70,7 +52,6 @@ def extract_class(cls):
         ],
         "properties": properties,
         "methods": methods,
-        **safe_source_info(cls),
     }
 
 
@@ -92,7 +73,6 @@ def extract_module(module):
     return {
         "name": module.__name__,
         "docstring": inspect.getdoc(module),
-        "file": inspect.getsourcefile(module),
         "classes": classes,
         "functions": functions,
     }
@@ -152,7 +132,7 @@ def save_json(data, path):
         json.dump(data, fp, indent=2, ensure_ascii=False)
 
 
-def generate_map(pkg_path: str, map_path: str):
+def _map(pkg_path: str, map_path: str):
     api = build_package_map(pkg_path)
     summary = generate_summary(api)
     api["summary"] = summary

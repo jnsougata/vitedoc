@@ -56,12 +56,6 @@ def render_function(name, data):
     if data.get("docstring"):
         md.append(format_docstring(data["docstring"]))
         md.append("")
-    if data.get("file"):
-        md.append("### Source")
-        md.append("")
-        md.append(f"- File: `{data['file']}`")
-        md.append(f"- Line: `{data['line']}`")
-        md.append("")
     return "\n".join(md)
 
 
@@ -91,12 +85,6 @@ def render_class(name, data):
         for base in data["bases"]:
             md.append(f"- `{base}`")
         md.append("")
-    if data.get("file"):
-        md.append("### Source")
-        md.append("")
-        md.append(f"- File: `{data['file']}`")
-        md.append(f"- Line: `{data['line']}`")
-        md.append("")
     methods = data.get("methods", {})
     if methods:
         md.append("### Methods")
@@ -116,11 +104,6 @@ def render_module(module_name, module_data):
     md.append("")
     if module_data.get("docstring"):
         md.append(module_data["docstring"])
-        md.append("")
-    if module_data.get("file"):
-        md.append("## Module Information")
-        md.append("")
-        md.append(f"- File: `{module_data['file']}`")
         md.append("")
     classes = module_data.get("classes", {})
     functions = module_data.get("functions", {})
@@ -145,36 +128,13 @@ def render_module(module_name, module_data):
             md.append("")
     return "\n".join(md)
 
-
-# def render_index(api):
-#     md = []
-#
-#     md.append("---")
-#     md.append("title: API Reference")
-#     md.append("---")
-#     md.append("")
-#
-#     md.append("# API Reference")
-#     md.append("")
-#
-#     md.append("## Modules")
-#     md.append("")
-#
-#     for module_name in sorted(api["modules"]):
-#         filename = module_name.replace(".", "_") + ".md"
-#         md.append(f"- [{module_name}](./{filename})")
-#
-#     md.append("")
-#
-#     return "\n".join(md)
-
-def generate(out_dir: str, input_json_path: str):
+def autodoc(out_dir: str, input_json_path: str):
     with open(input_json_path, encoding="utf-8") as f:
         api = json.load(f)
     for module_name, module_data in api["modules"].items():
         if "error" in module_data:
             continue
-        filename = module_name.replace(".", "_") + ".md"
+        filename = module_name.split(".")[-1] + ".md"
         content = render_module(module_name, module_data)
         with open(f"{out_dir}/{filename}", "w", encoding="utf-8") as fp:
             fp.write(content)

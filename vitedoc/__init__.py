@@ -12,3 +12,4 @@ __version__ = "0.1.dev0"
 __url__ = "https://github.com/jnsougata/vitedoc"
 
 from .client import  init
+from .utils import Action, Feature

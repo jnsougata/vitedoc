@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 
 
-def generate_vitepress_sidebar(api_json_path, docs_prefix="/content"):
+def _sidebar(api_json_path, docs_prefix="/content"):
     with open(api_json_path, encoding="utf-8") as f:
         api = json.load(f)
 
@@ -14,7 +14,7 @@ def generate_vitepress_sidebar(api_json_path, docs_prefix="/content"):
             "items": [],
         },
         {
-            "text": "API Reference",
+            "text": "Reference",
             "items": [],
         }
     ]
@@ -46,7 +46,7 @@ def generate_vitepress_sidebar(api_json_path, docs_prefix="/content"):
             sidebar[1]["items"].append(
                 {
                     "text": title,
-                    "link": f"{docs_prefix}/{module_name.replace('.', '_')}",
+                    "link": f"{docs_prefix}/{module_name.split('.')[-1]}",
                 }
             )
 
@@ -54,5 +54,5 @@ def generate_vitepress_sidebar(api_json_path, docs_prefix="/content"):
 
 
 if __name__ == "__main__":
-    sidebar = generate_vitepress_sidebar("api_map.json")
+    sidebar = _sidebar("api_map.json")
     print(json.dumps(sidebar, indent=2))
