@@ -1,7 +1,7 @@
-import pkgutil
 import importlib
 import inspect
 import json
+import pkgutil
 
 
 def safe_signature(obj):
@@ -14,7 +14,11 @@ def safe_signature(obj):
 def extract_function(func):
     return {
         "name": func.__name__,
+        "qualified_name": (
+            f"{func.__module__}.{func.__qualname__}"
+        ),
         "signature": safe_signature(func),
+        "async": inspect.iscoroutinefunction(func),
         "docstring": inspect.getdoc(func),
     }
 
@@ -23,27 +27,37 @@ def extract_class(cls):
     methods = {}
     properties = {}
 
-    for name, member in inspect.getmembers(cls):
+    for name, member in cls.__dict__.items():
         if name.startswith("_"):
             continue
 
-        if isinstance(member, property):
-            properties[name] = {
-                "docstring": inspect.getdoc(member),
-            }
+        try:
+            if isinstance(member, property):
+                properties[name] = {
+                    "docstring": inspect.getdoc(member),
+                }
 
-        elif (
-            inspect.isfunction(member)
-            or inspect.ismethod(member)
-            or inspect.ismethoddescriptor(member)
-        ):
-            methods[name] = {
-                "signature": safe_signature(member),
-                "docstring": inspect.getdoc(member),
-            }
+            elif (
+                inspect.isfunction(member)
+                or inspect.ismethoddescriptor(member)
+            ):
+                methods[name] = {
+                    "signature": safe_signature(member),
+                    "async": inspect.iscoroutinefunction(member),
+                    "docstring": inspect.getdoc(member),
+                }
+
+        except Exception as e:
+            print(
+                f"Warning: failed to inspect "
+                f"{cls.__name__}.{name}: {e}"
+            )
 
     return {
         "name": cls.__name__,
+        "qualified_name": (
+            f"{cls.__module__}.{cls.__qualname__}"
+        ),
         "docstring": inspect.getdoc(cls),
         "bases": [
             f"{base.__module__}.{base.__name__}"
@@ -64,11 +78,17 @@ def extract_module(module):
             if inspect.isclass(obj) and obj.__module__ == module.__name__:
                 classes[name] = extract_class(obj)
 
-            elif inspect.isfunction(obj) and obj.__module__ == module.__name__:
+            elif (
+                inspect.isfunction(obj)
+                and obj.__module__ == module.__name__
+            ):
                 functions[name] = extract_function(obj)
 
         except Exception as e:
-            print(f"Warning: failed to inspect {module.__name__}.{name}: {e}")
+            print(
+                f"Warning: failed to inspect "
+                f"{module.__name__}.{name}: {e}"
+            )
 
     return {
         "name": module.__name__,
@@ -91,7 +111,7 @@ def build_package_map(package_name):
     if hasattr(package, "__path__"):
         for _, module_name, _ in pkgutil.walk_packages(
             package.__path__,
-            package.__name__ + "."
+            package.__name__ + ".",
         ):
             try:
                 module = importlib.import_module(module_name)
@@ -111,6 +131,7 @@ def generate_summary(api):
     class_count = 0
     function_count = 0
     method_count = 0
+    property_count = 0
 
     for module in api["modules"].values():
         class_count += len(module.get("classes", {}))
@@ -118,12 +139,14 @@ def generate_summary(api):
 
         for cls in module.get("classes", {}).values():
             method_count += len(cls.get("methods", {}))
+            property_count += len(cls.get("properties", {}))
 
     return {
         "modules": module_count,
         "classes": class_count,
         "functions": function_count,
         "methods": method_count,
+        "properties": property_count,
     }
 
 
@@ -134,7 +157,5 @@ def save_json(data, path):
 
 def _map(pkg_path: str, map_path: str):
     api = build_package_map(pkg_path)
-    summary = generate_summary(api)
-    api["summary"] = summary
+    api["summary"] = generate_summary(api)
     save_json(api, map_path)
-
