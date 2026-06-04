@@ -26,7 +26,7 @@ def init(
     *,
     title: str = "ViteDoc",
     description: str = "Hello there!",
-    logo_path: str = "/favicon.png",
+    logo_path: str = "/logo.png",
     actions: Optional[list[Action]] = None,
     features: Optional[list[Feature]] = None,
     package_path: str = ".",

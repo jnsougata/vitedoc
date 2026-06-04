@@ -11,7 +11,7 @@ def _sidebar(api_json_path, pkg_prefix, version):
     sidebar = [
         {
             "text": "Introduction",
-            "items": [],
+            "link": f"/guide/{version}/introduction",
         },
         {
             "text": "Reference",
@@ -22,17 +22,8 @@ def _sidebar(api_json_path, pkg_prefix, version):
     for module_name, module_data in api["modules"].items():
         if "error" in module_data:
             continue
-
         parts = module_name.split(".")
-
-        if len(parts) == 1:
-            sidebar[0]["items"].append(
-                {
-                    "text": "Getting Started",
-                    "link": f"/guide/{version}/introduction",
-                }
-            )
-        else:
+        if len(parts) > 1:
             groups[parts[1].replace("_", " ").title()].append(module_name)
 
     for group_name in sorted(groups):

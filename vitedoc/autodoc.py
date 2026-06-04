@@ -8,13 +8,13 @@ from textwrap import dedent
 
 
 SECTION_HEADERS = {
-    "Args:": "### Arguments",
-    "Attributes:": "### Attributes",
-    "Properties:": "### Properties",
-    "Returns:": "### Returns",
-    "Raises:": "### Raises",
-    "Notes:": "### Notes",
-    "Examples:": "### Examples",
+    "Args:": "#### _Arguments_",
+    "Attributes:": "#### _Attributes_",
+    "Properties:": "#### _Properties_",
+    "Returns:": "#### _Returns_",
+    "Raises:": "#### _Raises_",
+    "Notes:": "#### _Notes_",
+    "Examples:": "#### _Examples_",
 }
 
 
@@ -23,11 +23,7 @@ def code_block(text):
 
 
 def make_anchor(name):
-    return re.sub(
-        r"[^a-z0-9-]",
-        "",
-        name.lower().replace("_", "-"),
-    )
+    return re.sub(r"[^a-z0-9-]","", name.lower().replace("_", "-"))
 
 
 def parse_field_section(line, result, last_item):
@@ -40,7 +36,7 @@ def parse_field_section(line, result, last_item):
         name, typ, desc = m.groups()
 
         result.append(
-            f"- **{name}** (`{typ}`): {desc}"
+            f"- _**{name}** (`{typ}`): {desc}_"
         )
 
         return len(result) - 1, True
@@ -258,17 +254,11 @@ def render_property(class_name, prop_name, data):
 def render_class(name, data):
     md = [f'<a id="{make_anchor(f"class-{name}")}"></a>', f"## {name}", ""]
     if data.get("qualified_name"):
-        md.append(
-            f"`{data['qualified_name']}`"
-        )
+        md.append(f"`{data['qualified_name']}`")
         md.append("")
 
     if data.get("docstring"):
-        md.append(
-            render_docstring(
-                data["docstring"]
-            )
-        )
+        md.append(render_docstring(data["docstring"]))
         md.append("")
 
     if data.get("bases"):
@@ -363,45 +353,23 @@ def render_module(
     module_name,
     module_data,
 ):
-    md = []
-
-    md.append("---")
-    md.append(f"title: {module_name}")
-    md.append("---")
-    md.append("")
-
-    md.append(f"# `{module_name}`")
-    md.append("")
-
+    md = ["---", f"title: {module_name}", "---", "", f"# `{module_name}`", ""]
     if module_data.get("docstring"):
-        md.append(
-            render_docstring(
-                module_data["docstring"]
-            )
-        )
-
+        md.append(render_docstring(module_data["docstring"]))
         md.append("")
 
-    classes = module_data.get(
-        "classes",
-        {},
-    )
+    classes = module_data.get("classes", {})
 
-    functions = module_data.get(
-        "functions",
-        {},
-    )
+    functions = module_data.get("functions", {})
 
     if classes:
         md.append("## Classes")
         md.append("")
-
         for cls_name in sorted(classes):
             md.append(
                 f"- [{cls_name}]"
                 f"(#{make_anchor(f'class-{cls_name}')})"
             )
-
         md.append("")
 
     documented_functions = {
@@ -409,11 +377,9 @@ def render_module(
         for k, v in functions.items()
         if v.get("docstring")
     }
-
     if documented_functions:
         md.append("## Functions")
         md.append("")
-
         for fn_name in sorted(
             documented_functions
         ):
@@ -425,12 +391,7 @@ def render_module(
         md.append("")
 
     for cls_name in sorted(classes):
-        md.append(
-            render_class(
-                cls_name,
-                classes[cls_name],
-            )
-        )
+        md.append(render_class(cls_name, classes[cls_name]))
 
         md.append("")
     for fn_name in sorted(documented_functions):
