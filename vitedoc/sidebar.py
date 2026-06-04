@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 
 
-def _sidebar(api_json_path, docs_prefix="/content"):
+def _sidebar(api_json_path, pkg_prefix, version):
     with open(api_json_path, encoding="utf-8") as f:
         api = json.load(f)
 
@@ -28,8 +28,8 @@ def _sidebar(api_json_path, docs_prefix="/content"):
         if len(parts) == 1:
             sidebar[0]["items"].append(
                 {
-                    "text": module_name,
-                    "link": f"{docs_prefix}/{module_name.replace('.', '_')}",
+                    "text": "Getting Started",
+                    "link": f"/guide/{version}/introduction",
                 }
             )
         else:
@@ -46,7 +46,7 @@ def _sidebar(api_json_path, docs_prefix="/content"):
             sidebar[1]["items"].append(
                 {
                     "text": title,
-                    "link": f"{docs_prefix}/{module_name.split('.')[-1]}",
+                    "link": f"/guide/{version}/{module_name.split('.')[-1]}",
                 }
             )
 

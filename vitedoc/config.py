@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 
-def build(
+def generate_config(
     path: str,
     *,
     base: str,

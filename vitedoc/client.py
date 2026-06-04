@@ -1,7 +1,8 @@
 import os
+import re
 from typing import Optional
 
-from .config import build
+from .config import generate_config
 from .package import create_package_json
 from .home import homepage
 
@@ -14,7 +15,7 @@ from .utils import Feature, Action, find_packages
 def create_dir_structure(base: str):
     if not os.path.exists(base):
         os.mkdir(base)
-    subdir = ['.vitepress', 'content', 'public']
+    subdir = ['.vitepress', 'public', "guide"]
     for subdir in subdir:
         path = os.path.join(base, subdir)
         if not os.path.exists(path):
@@ -30,27 +31,30 @@ def init(
     features: Optional[list[Feature]] = None,
     package_path: str = ".",
 ):
-    # if os.path.exists(base_dir):
-    #     print(f"Directory '{base_dir}' already exists. Please choose a different name.")
-    #     return
     create_dir_structure(base_dir)
     create_package_json(os.path.join(base_dir, 'package.json'))
-    api_map_path = os.path.join(base_dir, '.vitepress', 'api_map.json')
-    package_path = find_packages(package_path)
-    if len(package_path) >= 1:
-        package_path = package_path[0]
+    api_map_path = os.path.join(base_dir, '.vitepress', 'api.json')
+    package_paths = find_packages(package_path)
+    assert len(package_paths) > 0, f"No package found in path: {package_path}"
+    assert len(package_paths) == 1, f"Multiple packages found in path: {package_path}"
+    package_path = package_paths[0]
+    version = ""
+    with open(f"{package_path}/__init__.py") as f:
+        version = re.search(
+            r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE
+        ).group(1)
     _map(package_path, api_map_path)
     package_name = package_path.split('/')[-1]
-    build(
+    generate_config(
         path=os.path.join(base_dir, '.vitepress', 'config.mts'),
         base=f'/{package_name}/',
         title=title,
         description=description,
         logo=logo_path,
-        sidebar=_sidebar(api_map_path),
+        sidebar=_sidebar(api_map_path, package_name, version),
     )
     autodoc(
-        out_dir=os.path.join(base_dir, 'content'),
+        out_dir=os.path.join(base_dir, "guide", version),
         input_json_path=api_map_path,
     )
     actions = [action.to_dict() for action in actions] if actions else []
