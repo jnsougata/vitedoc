@@ -1,7 +1,16 @@
 from typing import Literal
+from pathlib import Path
 
 
 class Action:
+    """
+    Represents an action element.
+
+    Args:
+        theme (str): The name of the theme. Supported themes are `brand` and `alt`.
+        text (str): The text to display on the action button.
+        link (str): The URL to navigate to when the action button is clicked.
+    """
 
     def __init__(
         self,
@@ -19,6 +28,18 @@ class Action:
 
 
 class Feature:
+    """
+    Represents a feature element.
+
+    Args:
+        icon_emoji (str): The emoji icon to use. Defaults to None.
+        icon_path (str): The path to the icon. Defaults to None.
+        title (str): The title of the feature. Defaults to None.
+        details (str): The details of the feature. Defaults to None.
+
+    Notes:
+        `icon_emoji` and `icon_path` mutually exclusive. If both are provided, `icon_emoji` will take precedence.
+    """
     def __init__(
         self,
         *,
@@ -36,8 +57,6 @@ class Feature:
 
     def to_dict(self):
         return {"icon": self.icon, "title": self.title, "details": self.details}
-
-from pathlib import Path
 
 def find_packages(path: str):
     return [

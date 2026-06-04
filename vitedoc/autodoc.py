@@ -70,59 +70,35 @@ def parse_field_section(line, result, last_item):
 
 
 def parse_returns(line, result, last_item):
-    m = re.match(
-        r"^\s+([^:]+):\s*(.*)$",
-        line,
-    )
-
+    m = re.match(r"^\s+([^:]+):\s*(.*)$",line)
     if m:
         typ, desc = m.groups()
-
-        result.append(
-            f"- **Type:** `{typ.strip()}`"
-        )
-
+        result.append(f"- **Type:** `{typ.strip()}`")
         if desc:
-            result.append(
-                f"  - {desc}"
-            )
-
+            result.append(f"  - {desc}")
             return len(result) - 1, True
-
         return len(result) - 1, True
-
     if (
         last_item is not None
         and line.startswith((" " * 8, "\t"))
     ):
         result[last_item] += f" {line.strip()}"
         return last_item, True
-
     return last_item, False
 
 
 def parse_raises(line, result, last_item):
-    m = re.match(
-        r"^\s+([^:]+):\s*(.*)$",
-        line,
-    )
-
+    m = re.match(r"^\s+([^:]+):\s*(.*)$", line)
     if m:
         exc, desc = m.groups()
-
-        result.append(
-            f"- **{exc.strip()}**: {desc}"
-        )
-
+        result.append(f"- **{exc.strip()}**: {desc}")
         return len(result) - 1, True
-
     if (
         last_item is not None
         and line.startswith((" " * 8, "\t"))
     ):
         result[last_item] += f" {line.strip()}"
         return last_item, True
-
     return last_item, False
 
 
@@ -138,45 +114,34 @@ SECTION_HANDLERS = {
 def render_docstring(doc):
     if not doc:
         return ""
-
     lines = dedent(doc).splitlines()
-
     result = []
     section = None
     last_item = None
-
     notes_buffer = []
     examples_buffer = []
-
     def flush_notes():
         if not notes_buffer:
             return
-
         for note in notes_buffer:
             result.append(f"> {note}")
-
         result.append("")
         notes_buffer.clear()
-
     def flush_examples():
         if not examples_buffer:
             return
-
         result.append(
             code_block(
                 "\n".join(examples_buffer)
             )
         )
-
         result.append("")
         examples_buffer.clear()
 
     for line in lines:
         stripped = line.strip()
-
         if not stripped:
             continue
-
         if stripped in SECTION_HEADERS:
             flush_notes()
             flush_examples()
@@ -184,11 +149,8 @@ def render_docstring(doc):
             section = stripped
             last_item = None
 
-            result.append(
-                SECTION_HEADERS[stripped]
-            )
+            result.append(SECTION_HEADERS[stripped])
             result.append("")
-
             continue
 
         if section == "Notes:":
@@ -206,38 +168,21 @@ def render_docstring(doc):
         handler = SECTION_HANDLERS.get(section)
 
         if handler:
-            last_item, handled = handler(
-                line,
-                result,
-                last_item,
-            )
-
+            last_item, handled = handler(line, result, last_item)
             if handled:
                 continue
-
         flush_notes()
         flush_examples()
-
         result.append(stripped)
-
     flush_notes()
     flush_examples()
-
     while result and not result[-1].strip():
         result.pop()
-
     return "\n".join(result)
 
 
 def render_function(name, data):
-    md = []
-
-    md.append(
-        f'<a id="{make_anchor(name)}"></a>'
-    )
-
-    md.append(f"## `{name}`")
-    md.append("")
+    md = [f'<a id="{make_anchor(name)}"></a>', f"## `{name}`", ""]
 
     if data.get("qualified_name"):
         md.append(
@@ -277,89 +222,43 @@ def render_function(name, data):
     return "\n".join(md)
 
 
-def render_method(
-    class_name,
-    method_name,
-    data,
-):
+def render_method(class_name, method_name, data):
     md = []
-
-    anchor = make_anchor(
-        f"{class_name}-{method_name}"
-    )
-
+    anchor = make_anchor(f"{class_name}-{method_name}")
     md.append(f'<a id="{anchor}"></a>')
     md.append(f"#### `{method_name}`")
     md.append("")
-
     if data.get("signature"):
-        prefix = (
-            "async "
-            if data.get("async")
-            else ""
-        )
-
+        prefix = ("async " if data.get("async") else "")
         md.append(
             code_block(
                 f"{prefix}{method_name}"
                 f"{data['signature']}"
             )
         )
-
         md.append("")
-
     if data.get("docstring"):
-        md.append(
-            render_docstring(
-                data["docstring"]
-            )
-        )
-
+        md.append(render_docstring(data["docstring"]))
         md.append("")
-
     return "\n".join(md)
 
 
-def render_property(
-    class_name,
-    prop_name,
-    data,
-):
+def render_property(class_name, prop_name, data):
     md = []
-
-    anchor = make_anchor(
-        f"{class_name}-{prop_name}"
-    )
-
+    anchor = make_anchor(f"{class_name}-{prop_name}")
     md.append(f'<a id="{anchor}"></a>')
     md.append(f"#### `{prop_name}`")
     md.append("")
-
     if data.get("docstring"):
-        md.append(
-            render_docstring(
-                data["docstring"]
-            )
-        )
-
+        md.append(render_docstring(data["docstring"]))
         md.append("")
-
     return "\n".join(md)
 
 
 def render_class(name, data):
-    md = []
-
-    md.append(
-        f'<a id="{make_anchor(f"class-{name}")}"></a>'
-    )
-
-    md.append(f"## Class `{name}`")
-    md.append("")
-
+    md = [f'<a id="{make_anchor(f"class-{name}")}"></a>', f"## {name}", ""]
     if data.get("qualified_name"):
         md.append(
-            f"**Qualified Name:** "
             f"`{data['qualified_name']}`"
         )
         md.append("")
