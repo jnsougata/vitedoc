@@ -1,0 +1,292 @@
+{
+  "package": "vitedoc",
+  "modules": {
+    "vitedoc": {
+      "name": "vitedoc",
+      "docstring": "vitedoc\n---\nAn automatic documentation generator for vitepress.",
+      "classes": {},
+      "functions": {}
+    },
+    "vitedoc.autodoc": {
+      "name": "vitedoc.autodoc",
+      "docstring": "This module handles the formatting.",
+      "classes": {},
+      "functions": {
+        "autodoc": {
+          "name": "autodoc",
+          "qualified_name": "vitedoc.autodoc.autodoc",
+          "signature": "(out_dir: str, input_json_path: str)",
+          "async": false,
+          "docstring": null
+        },
+        "code_block": {
+          "name": "code_block",
+          "qualified_name": "vitedoc.autodoc.code_block",
+          "signature": "(text)",
+          "async": false,
+          "docstring": null
+        },
+        "make_anchor": {
+          "name": "make_anchor",
+          "qualified_name": "vitedoc.autodoc.make_anchor",
+          "signature": "(name)",
+          "async": false,
+          "docstring": null
+        },
+        "parse_field_section": {
+          "name": "parse_field_section",
+          "qualified_name": "vitedoc.autodoc.parse_field_section",
+          "signature": "(line, result, last_item)",
+          "async": false,
+          "docstring": null
+        },
+        "parse_raises": {
+          "name": "parse_raises",
+          "qualified_name": "vitedoc.autodoc.parse_raises",
+          "signature": "(line, result, last_item)",
+          "async": false,
+          "docstring": null
+        },
+        "parse_returns": {
+          "name": "parse_returns",
+          "qualified_name": "vitedoc.autodoc.parse_returns",
+          "signature": "(line, result, last_item)",
+          "async": false,
+          "docstring": null
+        },
+        "render_class": {
+          "name": "render_class",
+          "qualified_name": "vitedoc.autodoc.render_class",
+          "signature": "(name, data)",
+          "async": false,
+          "docstring": null
+        },
+        "render_docstring": {
+          "name": "render_docstring",
+          "qualified_name": "vitedoc.autodoc.render_docstring",
+          "signature": "(doc)",
+          "async": false,
+          "docstring": null
+        },
+        "render_function": {
+          "name": "render_function",
+          "qualified_name": "vitedoc.autodoc.render_function",
+          "signature": "(name, data)",
+          "async": false,
+          "docstring": null
+        },
+        "render_method": {
+          "name": "render_method",
+          "qualified_name": "vitedoc.autodoc.render_method",
+          "signature": "(class_name, method_name, data)",
+          "async": false,
+          "docstring": null
+        },
+        "render_module": {
+          "name": "render_module",
+          "qualified_name": "vitedoc.autodoc.render_module",
+          "signature": "(module_name, module_data)",
+          "async": false,
+          "docstring": null
+        },
+        "render_property": {
+          "name": "render_property",
+          "qualified_name": "vitedoc.autodoc.render_property",
+          "signature": "(class_name, prop_name, data)",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.client": {
+      "name": "vitedoc.client",
+      "docstring": null,
+      "classes": {},
+      "functions": {
+        "create_dir_structure": {
+          "name": "create_dir_structure",
+          "qualified_name": "vitedoc.client.create_dir_structure",
+          "signature": "(base: str)",
+          "async": false,
+          "docstring": null
+        },
+        "init": {
+          "name": "init",
+          "qualified_name": "vitedoc.client.init",
+          "signature": "(base_dir: str = 'docs', *, title: str = 'ViteDoc', description: str = 'Hello there!', logo_path: str = '/logo.png', actions: list[vitedoc.utils.Action] | None = None, features: list[vitedoc.utils.Feature] | None = None, package_path: str = '.')",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.config": {
+      "name": "vitedoc.config",
+      "docstring": null,
+      "classes": {},
+      "functions": {
+        "generate_config": {
+          "name": "generate_config",
+          "qualified_name": "vitedoc.config.generate_config",
+          "signature": "(path: str, *, base: str, title: str, description: str, logo: str, nav: list[dict[str, str]] | None = None, edit_link_pattern: str = '', sidebar: list[dict[str, list[dict[str, str]]]] | None = None, social_links: list[dict[str, str]] | None = None)",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.home": {
+      "name": "vitedoc.home",
+      "docstring": null,
+      "classes": {},
+      "functions": {
+        "homepage": {
+          "name": "homepage",
+          "qualified_name": "vitedoc.home.homepage",
+          "signature": "(path: str, *, name: str, tagline: str, image_src: str, actions: list[dict], features: list[dict]) -> None",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.mapper": {
+      "name": "vitedoc.mapper",
+      "docstring": null,
+      "classes": {},
+      "functions": {
+        "_map": {
+          "name": "_map",
+          "qualified_name": "vitedoc.mapper._map",
+          "signature": "(pkg_path: str, map_path: str)",
+          "async": false,
+          "docstring": null
+        },
+        "build_package_map": {
+          "name": "build_package_map",
+          "qualified_name": "vitedoc.mapper.build_package_map",
+          "signature": "(package_name)",
+          "async": false,
+          "docstring": null
+        },
+        "extract_class": {
+          "name": "extract_class",
+          "qualified_name": "vitedoc.mapper.extract_class",
+          "signature": "(cls)",
+          "async": false,
+          "docstring": null
+        },
+        "extract_function": {
+          "name": "extract_function",
+          "qualified_name": "vitedoc.mapper.extract_function",
+          "signature": "(func)",
+          "async": false,
+          "docstring": null
+        },
+        "extract_module": {
+          "name": "extract_module",
+          "qualified_name": "vitedoc.mapper.extract_module",
+          "signature": "(module)",
+          "async": false,
+          "docstring": null
+        },
+        "generate_summary": {
+          "name": "generate_summary",
+          "qualified_name": "vitedoc.mapper.generate_summary",
+          "signature": "(api)",
+          "async": false,
+          "docstring": null
+        },
+        "safe_signature": {
+          "name": "safe_signature",
+          "qualified_name": "vitedoc.mapper.safe_signature",
+          "signature": "(obj)",
+          "async": false,
+          "docstring": null
+        },
+        "save_json": {
+          "name": "save_json",
+          "qualified_name": "vitedoc.mapper.save_json",
+          "signature": "(data, path)",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.package": {
+      "name": "vitedoc.package",
+      "docstring": null,
+      "classes": {},
+      "functions": {
+        "create_package_json": {
+          "name": "create_package_json",
+          "qualified_name": "vitedoc.package.create_package_json",
+          "signature": "(path: str)",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.sidebar": {
+      "name": "vitedoc.sidebar",
+      "docstring": null,
+      "classes": {},
+      "functions": {
+        "_sidebar": {
+          "name": "_sidebar",
+          "qualified_name": "vitedoc.sidebar._sidebar",
+          "signature": "(api_json_path, pkg_prefix, version)",
+          "async": false,
+          "docstring": null
+        }
+      }
+    },
+    "vitedoc.utils": {
+      "name": "vitedoc.utils",
+      "docstring": null,
+      "classes": {
+        "Action": {
+          "name": "Action",
+          "qualified_name": "vitedoc.utils.Action",
+          "docstring": "Represents an action element.\n\nArgs:\n    theme (str): The name of the theme. Supported themes are `brand` and `alt`.\n    text (str): The text to display on the action button.\n    link (str): The URL to navigate to when the action button is clicked.",
+          "bases": [],
+          "properties": {},
+          "methods": {
+            "to_dict": {
+              "signature": "(self)",
+              "async": false,
+              "docstring": null
+            }
+          }
+        },
+        "Feature": {
+          "name": "Feature",
+          "qualified_name": "vitedoc.utils.Feature",
+          "docstring": "Represents a feature element.\n\nArgs:\n    icon_emoji (str): The emoji icon to use. Defaults to None.\n    icon_path (str): The path to the icon. Defaults to None.\n    title (str): The title of the feature. Defaults to None.\n    details (str): The details of the feature. Defaults to None.\n\nNotes:\n    `icon_emoji` and `icon_path` mutually exclusive. If both are provided, `icon_emoji` will take precedence.",
+          "bases": [],
+          "properties": {},
+          "methods": {
+            "to_dict": {
+              "signature": "(self)",
+              "async": false,
+              "docstring": null
+            }
+          }
+        }
+      },
+      "functions": {
+        "find_packages": {
+          "name": "find_packages",
+          "qualified_name": "vitedoc.utils.find_packages",
+          "signature": "(path: str)",
+          "async": false,
+          "docstring": null
+        }
+      }
+    }
+  },
+  "summary": {
+    "modules": 9,
+    "classes": 2,
+    "functions": 27,
+    "methods": 2,
+    "properties": 0
+  }
+}
