@@ -14,3 +14,7 @@ pip install git+https://github.com/jnsougata/vitedoc.git
 For now, it is not customizable enough to always suit your taste. If you want to use it, 
 you will have to modify the code to suit your needs or just use it as is. I will try to 
 make it more customizable in the future, but for now, this is what it is.
+
+### Note
+> It intentionally follows [Google's docstring style guide](https://google.github.io/styleguide/pyguide.html). If you want to use it, you will have to follow that style 
+> guide in your codebase. 
