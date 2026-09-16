@@ -27,19 +27,19 @@ if __name__ == '__main__':
         features=[
             Feature(
                 icon_emoji="🚀",
-                title="Fast and Efficient",
+                title="Fast",
                 details="Vitedoc is designed to be fast and efficient, allowing you to generate documentation "
                         "quickly and easily without sacrificing quality."
             ),
             Feature(
                 icon_emoji="🧩",
-                title="Automatic Documentation Generation",
+                title="Automatic",
                 details="Vitedoc automatically generates documentation for your project, saving you time and effort "
                         "while ensuring that your documentation is always up-to-date."
             ),
             Feature(
                 icon_emoji="📝",
-                title="Easy to Use",
+                title="Easy",
                 details="Vitedoc is easy to use and provides a simple interface for generating documentation, making it accessible to both beginners and experienced developers."
             )
         ]

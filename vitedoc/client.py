@@ -34,7 +34,7 @@ def init(
     create_dir_structure(base_dir)
     create_package_json(os.path.join(base_dir, 'package.json'))
     api_map_path = os.path.join(base_dir, '.vitepress', 'api.json')
-    package_paths = find_packages(package_path)
+    package_paths = find_packages()
     assert len(package_paths) > 0, f"No package found in path: {package_path}"
     assert len(package_paths) == 1, f"Multiple packages found in path: {package_path}"
     package_path = package_paths[0]

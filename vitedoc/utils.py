@@ -58,7 +58,7 @@ class Feature:
     def to_dict(self):
         return {"icon": self.icon, "title": self.title, "details": self.details}
 
-def find_packages(path: str):
+def find_packages():
     return [
         d.name
         for d in Path(".").iterdir()

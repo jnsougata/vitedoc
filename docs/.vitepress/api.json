@@ -275,7 +275,7 @@
         "find_packages": {
           "name": "find_packages",
           "qualified_name": "vitedoc.utils.find_packages",
-          "signature": "(path: str)",
+          "signature": "()",
           "async": false,
           "docstring": null
         }
